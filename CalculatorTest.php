@@ -1,9 +1,5 @@
 <?php
-// require_once 'PHPUnit/Framework/TestCase.php';
-// require __DIR__ . '/vendor/autoload.php';
 require 'vendor/autoload.php';
-// use PHPUnit\Framework\TestCase;
-// include 'calculator.php';
 require_once('calculator.php');
 
 class CalculatorTest extends PHPUnit_Framework_TestCase
