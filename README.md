@@ -1,7 +1,7 @@
 A warmup for using PHP and regex.
 
 Doesn't support parentheses (can't with regex), but will filter out
-Can't put + sign in fr	ont of numbers
+Can't put + sign in front of numbers
 Must put 0 in front of decimals (ie 0.4)
 
 invalid expressions and division by zero.

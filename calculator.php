@@ -29,39 +29,51 @@ Here are some (but not limit to) reasonable test cases:
 <?php 
 // grab the expression and process
 $expr = $_GET["expr"];
-process_input($expr);
+echo process_input($expr);
 ?>
 
 <?php
 function process_input($expr) {
   // sanitize the expression
-  $clean = sanitize_input($expr);
-
+  // $clean = sanitize_input($expr);
+  $clean = $expr;
   // add a space between consecutive negative signs
   $clean = preg_replace("~\-{2}~", "- -",$clean);
 
   // replace multiple spaces with one space
-  // $clean = preg_replace("~\s+~", " ",$clean);
+  $clean = preg_replace("~\s+~", " ",$clean);
 
-  if ($clean == "") {
-    return;
+  if (empty_or_zero($clean)) {
+    return "";
   }
 
   echo "<h2>Result</h2>";
   if (valid_expression($clean) ) {
     if (division_by_zero($clean)) {
-      echo "Division by zero error! <br>";
+      // echo "Division by zero error! <br>";
+      return "Division by zero error!";
     }
     else {
       $result = eval('return ' . $clean . ';');
-      echo $clean." = ".$result."<br>";
+      // echo $clean." = ".$result."<br>";
+      return trim($clean)." = ".$result;
     }
   }
   else {
-    echo "Invalid expression!<br>";
+    // echo "Invalid expression!<br>";
+    return "Invalid expression!";
   }
 }
 
+/* emptry string "" or "0" should do nothing
+"  0" and "0  " should still output 0 = 0 so only match "0"
+for some reason $expr == "0" didnt work*/
+function empty_or_zero($expr) {
+  if ($expr == "" || preg_match("~^0$~",$expr)) {
+    return true;
+  }
+  return false;
+}
 function division_by_zero($expr) {
   // \/\s*\-? division sign followed by zero or more spaces followed by optional minus sign
   // 0(\.0+)? zero followed by optional dot and 1 or more zeros
@@ -82,13 +94,13 @@ function valid_expression($expr) {
   // $expr = sanitize_input($expr);
   // ^ beginning of line
   // \s*\-? optional whitespace and optional minus sign
-  // \d+ one or more digits
+  // ([1-9]\d*|0) one or more digits or just a 0
   // (\.\d+)? optional dot followed by one or more numbers
   // \s* optional zero or more spaces
-  // [+\-*/\]\s\-?\d+(\.\d+)?\s* any of those operators, followed by 0 or more spaces, followed by optional minus sign, followed by another int or float, followed by 0 or more spaces
+  // [+\-*/\]\s\-?([1-9]\d*|0)(\.\d+)?\s* any of those operators, followed by 0 or more spaces, followed by optional minus sign, followed by another int or float, followed by 0 or more spaces
   // ( )* the whole expression (operator followed by number/float) repeated zero or more times
-  $valid = "~^\s*\-?\d+(\.\d+)?\s*([+\-*/]\s*\-?\d+(\.\d+)?\s*)*$~";
-
+  // $valid = "~^\s*\-?\d+(\.\d+)?\s*([+\-*/]\s*\-?\d+(\.\d+)?\s*)*$~";
+  $valid = "~^\s*\-?([1-9]\d*|0)(\.\d+)?\s*([+\-*/]\s*\-?([1-9]\d*|0)(\.\d+)?\s*)*$~";
   if (preg_match($valid, $expr)) {
     return true;
   }
@@ -96,8 +108,8 @@ function valid_expression($expr) {
 }
 
 function sanitize_input($data) {
-  $data = trim($data);
-  $data = stripslashes($data);
+  // $data = trim($data);
+  // $data = stripslashes($data);
   $data = htmlspecialchars($data);
   return $data;
 }
